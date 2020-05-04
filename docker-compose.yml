@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    command: python /app/run_server.py
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
