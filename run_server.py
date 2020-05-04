@@ -1,68 +1,82 @@
 # import the necessary packages
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.applications import imagenet_utils
-from PIL import Image
 import numpy as np
 import flask
+from flask_restplus import Resource
+from werkzeug.utils import secure_filename
 import io
+from yolov3.models import YoloV3
+from yolov3.dataset import transform_images
+from flaskutils.parsers import ImageParser
+from flaskutils.namespaces import KingDominoNamespace
+
+# Path to class file
+CLASSES = './data/kingdomino.names'
+# Path to model weight
+MODEL_WEIGHT = './data/yolov3.tf'
+# Image input size
+MODEL_SIZE_IMAGE = 416
+# Image output path
+OUTPUT_IMAGE_PATH = './output.jpg'
+# Number of classes in the model
+MODEL_CLASS_NUM = 8
 
 # initialize our Flask application and the Keras model
 app = flask.Flask(__name__)
-model = None
+modelKingDomino = None
+
+KINGDOMINO_API = KingDominoNamespace.api
+IMAGE_PARSER = ImageParser.image_uploaded
 
 def load_model():
-    # Test model
-    global model
-    model = ResNet50(weights="imagenet")
+    global modelKingDomino
+    modelKingDomino = YoloV3(classes=MODEL_CLASS_NUM)
+    modelKingDomino.load_weights(MODEL_WEIGHT).expect_partial()
+    print("-- Weights loaded --")
 
-def prepare_image(image, target):
-    # if the image mode is not RGB, convert it
-    if image.mode != "RGB":
-        image = image.convert("RGB")
+    class_names = [c.strip() for c in open(MODEL_CLASS_NUM).readlines()]
+    print("-- Classes loaded --")
 
-    # resize the input image and preprocess it
-    image = image.resize(target)
-    image = img_to_array(image)
-    image = np.expand_dims(image, axis=0)
-    image = imagenet_utils.preprocess_input(image)
+@KINGDOMINO_API.route("/predict/kingdomino/latest")
+@KINGDOMINO_API.expect(IMAGE_PARSER)
+class KingDominoAILatest(Resource):
+    """
+    API Class for the last model of KingDomino
+    """
+    @KINGDOMINO_API.doc("Get prediction from an Image File of a kingdomino board. This is the latest model for this AI")
+    @KINGDOMINO_API.response(404,"Can't upload the image file or get de prediction corresponding")
+    @KINGDOMINO_API.response(200,"Image uploaded and prediction returned")
+    def post(self):
+        args = IMAGE_PARSER.parse_args()
+        result = args
+        return flask.jsonify(result)
 
-    # return the processed image
-    return image
-
-@app.route("/predict", methods=["POST"])
-def predict():
+#@app.route("/predict/kingdomino/latest", methods=["POST"])
+#def predict():
     # initialize the data dictionary that will be returned from the
     # view
-    data = {"success": False}
+#    data = {"success": False}
 
     # ensure an image was properly uploaded to our endpoint
-    if flask.request.method == "POST":
-        if flask.request.files.get("image"):
-            # read the image in PIL format
-            image = flask.request.files["image"].read()
-            image = Image.open(io.BytesIO(image))
+#    if flask.request.method == "POST":
+#        if flask.request.files.get("image"):
+#            img_raw = tf.image.decode_image(
+#            open(FLAGS.image, 'rb').read(), channels=3)
 
-            # preprocess the image and prepare it for classification
-            image = prepare_image(image, target=(224, 224))
+#            img = tf.expand_dims(img_raw, 0)
+#            img = transform_images(img, FLAGS.size)
 
-            # classify the input image and then initialize the list
-            # of predictions to return to the client
-            preds = model.predict(image)
-            results = imagenet_utils.decode_predictions(preds)
-            data["predictions"] = []
+#            boxes, scores, classes, nums = model(img)
 
-            # loop over the results and add them to the list of
-            # returned predictions
-            for (imagenetID, label, prob) in results[0]:
-                r = {"label": label, "probability": float(prob)}
-                data["predictions"].append(r)
+#            data["boxes"] = boxes
+#            data["scores"] = scores
+#            data["classes"] = classes
+#            data["nums"] = nums
 
             # indicate that the request was a success
-            data["success"] = True
+#            data["success"] = True
 
     # return the data dictionary as a JSON response
-    return flask.jsonify(data)
+#    return flask.jsonify(data)
 
 
 if __name__ == "__main__":

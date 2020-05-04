@@ -11,6 +11,8 @@ gevent = "*"
 requests = "*"
 pillow = "*"
 keras = "*"
+flask-restplus = "*"
+werkzeug = "==0.16.1"
 
 [requires]
 python_version = "2.7"
