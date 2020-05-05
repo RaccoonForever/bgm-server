@@ -11,3 +11,6 @@
 - Specify python version : pipenv install --python 2.7
 - Remove pipenv (you should be in the directory): pipenv --rm
 
+### Python tests
+- Unittest (shoud be outside of main pkg when launching the command): python -m unittest app.test.test_transform_yolo
+
