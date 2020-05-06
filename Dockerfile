@@ -4,6 +4,7 @@ FROM tensorflow/tensorflow:latest
 # Set environment variables
 ENV FLASK_APP run_server.py
 ENV FLASK_RUN_HOST 0.0.0.0
+ENV FLASK_RUN_PORT 80
 ENV AWS_SECRET_KEY "Nice try"
 ENV AWS_ACCESS_KEY "Nice try again"
 ENV AWS_S3_URL "Http://hihi.tv"

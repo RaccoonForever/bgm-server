@@ -1,45 +1,31 @@
-# import the necessary packages
-import numpy as np
+# pylint: disable=line-too-long
+"""
+Main script to run the server
+"""
+
+import os
 import flask
 from flask import Blueprint
-from flask_restplus import Resource, Api
-from werkzeug.utils import secure_filename
-import io
-import os
-import tensorflow as tf
-from main.yolov3.models import YoloV3
-from main.yolov3.dataset import transform_images
-from main.yolo_transform import convert_prediction_to_tiles, assign_crowns_to_tiles, compute_matrix_from_predictions, zoning, score
-from main.flaskutils.parsers import ImageParser
+from flask_restplus import Api
 from config import CONFIG_BY_NAME
-from main.flaskutils.kingdominocontroller import API as kingdominons
+from main.flaskutils.kingdominocontroller import API as KINGDOMINO_NS
+from main.yolov3.yolomodels import load_models
 
 BLUEPRINT = Blueprint('api', __name__)
 
 # initialize our Flask application
-app = flask.Flask(__name__)
-app.config.from_object(CONFIG_BY_NAME[os.getenv('ENVIRONMENT', 'dev')])
-print("--- Environment %s initialized ---" % (os.getenv('ENVIRONMENT')))
-
-# Global var for models
-modelKingDominoV1 = None
+APP = flask.Flask(__name__)
+APP.config.from_object(CONFIG_BY_NAME[os.getenv('ENVIRONMENT', 'dev')])
+print "--- Environment %s initialized ---" % (APP.config['ENVIRONMENT'])
 
 API = Api(BLUEPRINT, version='0.1', title='BoardGameMate API', description='', validate=True)
-API.add_namespace(kingdominons, path='/kingdomino')
+API.add_namespace(KINGDOMINO_NS, path='/kingdomino')
 
-app.register_blueprint(BLUEPRINT)
-app.app_context().push()
+APP.register_blueprint(BLUEPRINT)
+APP.app_context().push()
 
-IMAGE_PARSER = ImageParser.image_uploaded
-
-def load_models():
-    global modelKingDominoV1
-    modelKingDominoV1 = YoloV3(classes=int(app.config['KINGDOMINO_V1_MODEL_CLASS_NUMBER']))
-    modelKingDominoV1.load_weights(app.config['KINGDOMINO_V1_MODEL_WEIGHT_PATH']).expect_partial()
-    print("-- Weights modelKingDominoV1 loaded --")
 
 if __name__ == "__main__":
-    print(("* Loading TF models and Flask starting server..."
-        "please wait until server has fully started"))
+    print "* Loading TF models and Flask starting server... \n please wait until server has fully started *"
     load_models()
-    app.run(host='0.0.0.0', port=80)
+    APP.run(host=APP.config['FLASK_RUN_HOST'], port=APP.config['FLASK_RUN_PORT'])

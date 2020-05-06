@@ -18,15 +18,20 @@ class Config:
     # Path to model weight
     KINGDOMINO_V1_MODEL_WEIGHT_PATH = os.getenv('KINGDOMINO_V1_MODEL_WEIGHT_PATH', './data/yolov3.tf')
     # Image input size
-    KINGDOMINO_V1_MODEL_SIZE_IMAGE = os.getenv('KINGDOMINO_V1_MODEL_SIZE_IMAGE', 416)
+    KINGDOMINO_V1_MODEL_SIZE_IMAGE = int(os.getenv('KINGDOMINO_V1_MODEL_SIZE_IMAGE', 416))
     # Number of classes in the model
-    KINGDOMINO_V1_MODEL_CLASS_NUMBER = os.getenv('KINGDOMINO_V1_MODEL_CLASS_NUMBER', 8)
+    KINGDOMINO_V1_MODEL_CLASS_NUMBER = int(os.getenv('KINGDOMINO_V1_MODEL_CLASS_NUMBER', 8))
+    ENVIRONMENT = "Development"
+    FLASK_RUN_HOST = os.getenv('FLASK_RUN_HOST', "0.0.0.0")
+    FLASK_RUN_PORT = int(os.getenv('FLASK_RUN_PORT', 80))
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    ENVIRONMENT = "Development"
 
 class ProductionConfig(Config):
     DEBUG = False
+    ENVIRONMENT = "Production"
 
 CONFIG_BY_NAME = dict(
     dev=DevelopmentConfig,

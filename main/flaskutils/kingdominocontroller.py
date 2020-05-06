@@ -1,21 +1,22 @@
+# pylint: disable=no-self-use
 """
 KingDomino Controller
 """
-import numpy as np
 import flask
 from flask import current_app as app
 from flask_restplus import Resource
-from namespaces import KingDominoNamespace
-from parsers import ImageParser
 import tensorflow as tf
-from main.yolov3.models import YoloV3
-from main.yolov3.dataset import transform_images
-from main.yolo_transform import convert_prediction_to_tiles, assign_crowns_to_tiles, compute_matrix_from_predictions, zoning, score
-
+from main.flaskutils.namespaces import KingDominoNamespace
+from main.flaskutils.parsers import ImageParser
+from main.yolov3.imagepreprocessing import transform_images
+import main.yolov3.yolomodels as models
+from main.gamecommon.yolo_transform import convert_prediction_to_tiles, assign_crowns_to_tiles, \
+    compute_matrix_from_predictions, zoning, score
 
 API = KingDominoNamespace.api
 
 IMAGE_PARSER = ImageParser.image_uploaded
+
 
 def allowed_file(filename):
     """
@@ -28,16 +29,22 @@ def allowed_file(filename):
         return ext
     return None
 
+
 @API.route('/predict/latest')
 class KingDominoLatest(Resource):
     """
     API Class for the last model of KingDomino
     """
+
     @API.expect(IMAGE_PARSER)
     @API.doc('Get prediction from an image file for a kingdomino board. This is the latest model')
     @API.response(404, "Error uploading the image or computing the result")
     @API.response(400, "Image validation error. Probably wrong formatting for the POST call")
     def post(self):
+        """
+        Post function
+        :return: the score prediction
+        """
         data = {"success": False}
 
         args = IMAGE_PARSER.parse_args()
@@ -45,11 +52,11 @@ class KingDominoLatest(Resource):
         filename.save("temp.jpg")
         img_raw = tf.image.decode_image(open("temp.jpg", 'rb').read(), channels=3)
 
-        width, height, channels = img_raw.shape
+        width, _, _ = img_raw.shape
         img = tf.expand_dims(img_raw, 0)
-        img = transform_images(img, int(app.config['KINGDOMINO_V1_MODEL_SIZE_IMAGE']))
+        img = transform_images(img, app.config['KINGDOMINO_V1_MODEL_SIZE_IMAGE'])
 
-        boxes, scores, classes, _ = modelKingDominoV1(img)
+        boxes, scores, classes, _ = models.MODEL_KINGDOMINO_V1(img)
 
         [boxes] = boxes.numpy()
         [scores] = scores.numpy()
@@ -65,6 +72,5 @@ class KingDominoLatest(Resource):
         result = score(matrix_tiles, zone_matrix)
         data["result"] = result
         data["success"] = True
-        
-        return flask.jsonify(data)
 
+        return flask.jsonify(data)

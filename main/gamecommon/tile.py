@@ -1,11 +1,10 @@
-# pylint: disable=C0301
-# Disabling "Line too long"
+# pylint: disable=line-too-long, too-many-arguments
 
 """
 Script with Tile class and its functions
 """
 
-from constants import (
+from main.gamecommon.constants import (
     MIN_WIDTH,
     MIN_HEIGHT,
     MAX_HEIGHT,
@@ -16,7 +15,7 @@ from constants import (
 )
 
 
-class Tile:
+class Tile(object):
     """
     Class to handle tile functions and model
     Example: a swamp / a crown / a castle etc...

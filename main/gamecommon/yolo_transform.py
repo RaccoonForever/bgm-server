@@ -1,7 +1,11 @@
+# pylint: disable=line-too-long, consider-using-enumerate
+"""
+Script that handle every transformations to compute a score from a yolo prediction
+"""
 from operator import attrgetter
 
-from .kingdominomodel.tile import Tile
-from .kingdominomodel.constants import MAX_TILE_NUMBER, MATRIX_ERROR_MARGIN, TILE_TYPE_CROWN
+from main.gamecommon.tile import Tile
+from main.gamecommon.constants import MAX_TILE_NUMBER, MATRIX_ERROR_MARGIN, TILE_TYPE_CROWN
 
 
 def convert_prediction_to_tiles(boxes, scores, classes):

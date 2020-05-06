@@ -1,3 +1,7 @@
+#pylint: disable=line-too-long, too-many-locals, no-self-use
+"""
+Script to test from the result of a model to the result on the gameboard
+"""
 import unittest
 
 from ..main.yolo_transform import compute_matrix_from_predictions, assign_crowns_to_tiles, zoning, score
@@ -15,8 +19,14 @@ from ..main.kingdominomodel.constants import (
 
 
 class TransformYoloTest(unittest.TestCase):
-
+    """ 
+    Class to test all transformations to go through a gameboard prediction to a result
+    """
+    
     def init_tiles1(self):
+        """
+        Tiles without crown 1
+        """
         tile1 = Tile(tiletype=TILE_TYPE_FOREST, xmin=843, ymin=690, xmax=1484, ymax=1347)
         tile2 = Tile(tiletype=TILE_TYPE_FOREST, xmin=1511, ymin=682, xmax=2165, ymax=1346)
         tile3 = Tile(tiletype=TILE_TYPE_FOREST, xmin=1543, ymin=2671, xmax=2202, ymax=3345)
@@ -38,6 +48,9 @@ class TransformYoloTest(unittest.TestCase):
         return tiles
 
     def init_tiles2(self):
+        """
+        Tiles without crown 2
+        """
         tiles = [[Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_MINE),
                   Tile(tiletype=TILE_TYPE_PASTURE), Tile(tiletype=TILE_TYPE_PASTURE)],
                  [Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_WHEAT), Tile(tiletype=TILE_TYPE_WHEAT),
@@ -53,6 +66,9 @@ class TransformYoloTest(unittest.TestCase):
         return tiles
 
     def init_tiles3(self):
+        """
+        Tiles without crown 3
+        """
         tiles = [[Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_LAKE), None,
                   Tile(tiletype=TILE_TYPE_PASTURE), Tile(tiletype=TILE_TYPE_PASTURE)],
                  [Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_WHEAT), Tile(tiletype=TILE_TYPE_WHEAT),
@@ -68,6 +84,9 @@ class TransformYoloTest(unittest.TestCase):
         return tiles
 
     def init_tiles4(self):
+        """
+        Tiles without crown 4
+        """
         tiles = [[Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_LAKE), None,
                   Tile(tiletype=TILE_TYPE_PASTURE), Tile(tiletype=TILE_TYPE_PASTURE), None, None, None, None],
                  [Tile(tiletype=TILE_TYPE_LAKE), Tile(tiletype=TILE_TYPE_WHEAT), Tile(tiletype=TILE_TYPE_WHEAT),
@@ -83,6 +102,9 @@ class TransformYoloTest(unittest.TestCase):
         return tiles
 
     def init_tileswithcrown(self):
+        """
+        Tiles with crown
+        """
         tiles = self.init_tiles1()
         tiles.append(Tile(tiletype=TILE_TYPE_CROWN, xmin=1296, ymin=3185, xmax=1520, ymax=3291))
         tiles.append(Tile(tiletype=TILE_TYPE_CROWN, xmin=2625, ymin=3133, xmax=2848, ymax=3312))
@@ -98,6 +120,9 @@ class TransformYoloTest(unittest.TestCase):
         return tiles
 
     def test_computematrix1(self):
+        """
+        Verify that the matrix returned is as expected
+        """
         tiles = self.init_tiles1()
         matrix = compute_matrix_from_predictions(tiles)
         self.assertTrue(len(matrix[0]) == MAX_TILE_NUMBER)
@@ -120,6 +145,9 @@ class TransformYoloTest(unittest.TestCase):
         self.assertEqual(matrix[3][3].type, TILE_TYPE_WHEAT)
 
     def test_assigncrowns(self):
+        """
+        Test that crowns are well assigned to tile corresponding
+        """
         tiles = self.init_tileswithcrown()
         result_tiles = assign_crowns_to_tiles(tiles)
         self.assertEqual(len(result_tiles), 16)
@@ -141,6 +169,9 @@ class TransformYoloTest(unittest.TestCase):
         self.assertEqual(len(tiles[15].crowns), 0)
 
     def test_zoning1(self):
+        """
+        Test that the zoning is working for tiles 2
+        """
         type_matrix = self.init_tiles2()
 
         matrix_zone, nb_zone = zoning(type_matrix)
@@ -182,6 +213,9 @@ class TransformYoloTest(unittest.TestCase):
         self.assertEqual(nb_zone, 10)
 
     def test_zoning2(self):
+        """
+        Test that the zoning is working for tiles 3
+        """
         type_matrix = self.init_tiles3()
 
         matrix_zone, nb_zone = zoning(type_matrix)
@@ -223,6 +257,9 @@ class TransformYoloTest(unittest.TestCase):
         self.assertEqual(nb_zone, 7)
 
     def test_zoning3(self):
+        """
+        Test that the zoning is working for tiles 3
+        """
         type_matrix = self.init_tiles4()
 
         matrix_zone, nb_zone = zoning(type_matrix)
@@ -264,6 +301,9 @@ class TransformYoloTest(unittest.TestCase):
         self.assertEqual(nb_zone, 7)
 
     def test_score1(self):
+        """
+        Test the full transformation for tiles 1
+        """
         tiles = self.init_tileswithcrown()
         tiles = assign_crowns_to_tiles(tiles)
         matrix_tiles = compute_matrix_from_predictions(tiles)
