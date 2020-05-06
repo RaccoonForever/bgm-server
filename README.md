@@ -3,8 +3,8 @@
 ## Useful commands
 ### Docker
 - Adding user to group docker (works if the group has already been created): newgrp docker 
-- Building an image: docker build -t raccoonforever/bgm-server:last .
-- Running a container: docker run -d -it raccoonforever/bgm-server:last
+- Building an image: docker build -t raccoonforever/bgm-server:latest .
+- Running a container: docker run -d -it -p 8080:80 raccoonforever/bgm-server:latest
 - Enter a container running: docker exec -it [containerID] bash
 
 ### Pipenv
