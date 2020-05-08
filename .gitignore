@@ -1,4 +1,5 @@
 .idea
 /data
 .env
+*.pyc
 *.jpg
