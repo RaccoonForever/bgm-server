@@ -9,12 +9,6 @@ import json
 from main.yolov3.imagepreprocessing import transform_images, base64_encode_image
 from main import redis_client
 
-# Initializing redis config
-IMAGE_QUEUE = "kingdomino_queue"
-BATCH_SIZE = 32
-SERVER_SLEEP = 0.25
-CLIENT_SLEEP = 0.25
-
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
@@ -30,6 +24,7 @@ def predict_kingdomino_v1(filepath, uniqueid):
     img = transform_images(img_raw,
                            (APP.config['KINGDOMINO_V1_MODEL_SIZE_IMAGE'], APP.config['KINGDOMINO_V1_MODEL_SIZE_IMAGE']))
 
+    # Save the image as a copy beeing contiguous [necessary for serialization]
     img = img.copy(order="C")
 
     encoded_img = base64_encode_image(img)
@@ -39,7 +34,7 @@ def predict_kingdomino_v1(filepath, uniqueid):
         "image": encoded_img
     }
 
-    redis_client.rpush(IMAGE_QUEUE, json.dumps(d))
+    redis_client.rpush(APP.config['REDIS_QUEUE_KINGDOMINO'], json.dumps(d))
 
     # keep looping until our model server returns the output
     # predictions
@@ -49,13 +44,13 @@ def predict_kingdomino_v1(filepath, uniqueid):
         # check to see if our model has classified the input
         # image
         if output is not None:
-            print "output is : " + output
+            print "Score is : " + output
             # delete the result from the database and break
             # from the polling loop
             redis_client.delete(uniqueid)
             break
         # sleep for a small amount to give the model a chance
         # to classify the input image
-        time.sleep(CLIENT_SLEEP)
+        time.sleep(APP.config['REDIS_CLIENT_SLEEP'])
 
     return output
