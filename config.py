@@ -8,9 +8,7 @@ class Config(object):
     """
     Class that will handle common configuration for all environment
     """
-    AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY', 'Nice try')
-    AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY', 'Nice try again')
-    AWS_S3_URL = os.getenv('AWS_S3_URL', 'Hihi')
+    GCP_CREDENTIALS_PATH = os.getenv('GCP_CREDENTIALS_PATH', '/app/dominomate_secrets.json')
     DEBUG = False
     MEDIA_ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
     MEDIA_IMAGE_PATH = os.getenv('MEDIA_IMAGE_PATH', '/app/media/')
@@ -32,6 +30,7 @@ class Config(object):
     REDIS_SERVER_SLEEP = float(os.getenv('REDIS_SERVER_SLEEP', 0.25))
     REDIS_CLIENT_SLEEP = float(os.getenv('REDIS_CLIENT_SLEEP', 0.25))
     REDIS_URL = "redis://" + REDIS_HOST + ":" + str(REDIS_PORT) + "/0"
+
 
 
 class DevelopmentConfig(Config):

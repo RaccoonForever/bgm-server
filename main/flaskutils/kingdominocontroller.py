@@ -10,6 +10,7 @@ from flask_restplus import Resource
 from main.flaskutils import API
 from main.flaskutils.parsers import ImageParser
 from main.yolov3.predict import predict_kingdomino_v1
+from main.gcp.gcs import upload_image
 
 IMAGE_PARSER = ImageParser.image_uploaded
 
@@ -54,7 +55,7 @@ class KingDominoLatest(Resource):
 
             # Save the file
             path = os.path.join(APP.config['MEDIA_IMAGE_PATH'], unique_id + "." + extension)
-            tempfile.save(path)
+            upload_image(path, unique_id + "." + extension)
             tempfile.close()
 
             result = predict_kingdomino_v1(path, unique_id)

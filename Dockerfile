@@ -6,9 +6,7 @@ ENV PYTHONUNBUFFERED 1
 ENV FLASK_WEB_APP run_web_server.py
 ENV FLASK_RUN_HOST 0.0.0.0
 ENV FLASK_RUN_PORT 80
-ENV AWS_SECRET_KEY "Nice try"
-ENV AWS_ACCESS_KEY "Nice try again"
-ENV AWS_S3_URL "Http://hihi.tv"
+ENV GCP_CREDENTIALS_PATH "/app/dominomate_secrets.json"
 ENV MEDIA_IMAGE_PATH /app/media/
 ENV KINGDOMINO_V1_CLASSES_FILE_PATH "/app/data/kingdomino.names"
 ENV KINGDOMINO_V1_MODEL_WEIGHT_PATH "/app/data/yolov3.tf"
