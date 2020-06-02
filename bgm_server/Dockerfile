@@ -1,11 +1,20 @@
 # Pull base image
 FROM tensorflow/tensorflow:latest
 
-# Set environment variables
+LABEL maintainer="Arthur Clerc-Gherardi <arthur@clerc-gherardi.fr>"
+
+# Set environment variables for wsgi
+ENV STATIC_URL /static
+ENV STATIC_PATH /app/static
+# if 1 then the url / serves /static/index.html
+ENV STATIC_INDEX 0
+ENV PYTHONPATH=/app
+
+# Set environment variables for python
 ENV PYTHONUNBUFFERED 1
 ENV FLASK_WEB_APP run_web_server.py
 ENV FLASK_RUN_HOST 0.0.0.0
-ENV FLASK_RUN_PORT 80
+ENV FLASK_RUN_PORT 8080
 ENV GCP_CREDENTIALS_PATH "/app/dominomate_secrets.json"
 ENV MEDIA_IMAGE_PATH /app/media/
 ENV KINGDOMINO_V1_CLASSES_FILE_PATH "/app/data/kingdomino.names"
@@ -31,8 +40,11 @@ WORKDIR /app
 COPY Pipfile Pipfile.lock /app/
 RUN pip install pipenv && pipenv install --system
 
-COPY boot.sh /app/boot.sh
-RUN chmod +x /app/boot.sh
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
 # Copy project
 COPY . /app/
+
+
+

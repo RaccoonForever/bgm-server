@@ -16,6 +16,8 @@ werkzeug = "==0.16.1"
 redis = "*"
 flask-redis = "*"
 google-cloud-storage = "*"
+meinheld = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "2.7"
