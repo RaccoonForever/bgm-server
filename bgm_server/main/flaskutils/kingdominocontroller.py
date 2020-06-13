@@ -55,6 +55,7 @@ class KingDominoLatest(Resource):
 
             # Save the file
             path = os.path.join(APP.config['MEDIA_IMAGE_PATH'], unique_id + "." + extension)
+            tempfile.save(path)
             upload_image(path, unique_id + "." + extension)
             tempfile.close()
 

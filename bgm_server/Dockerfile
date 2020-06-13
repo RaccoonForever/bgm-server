@@ -1,5 +1,5 @@
 # Pull base image
-FROM tensorflow/tensorflow:latest
+FROM tensorflow/tensorflow:2.1.0
 
 LABEL maintainer="Arthur Clerc-Gherardi <arthur@clerc-gherardi.fr>"
 
@@ -38,7 +38,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY Pipfile Pipfile.lock /app/
-RUN pip install pipenv && pipenv install --system
+RUN pip install pipenv==2018.11.26 && pipenv install --system
 
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
