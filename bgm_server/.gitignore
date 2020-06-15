@@ -1,5 +1,5 @@
 .idea
-/data
+/data/yolov3.tf*
 .env
 *.pyc
 *.json
