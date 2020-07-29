@@ -39,8 +39,6 @@ def download_models():
     """
     service = init_gcs()
     bucket = service.get_bucket('server-kingdomino-bucket')
-    blob = bucket.blob('models/kingdomino.names')
-    blob.download_to_filename(Config.KINGDOMINO_V1_CLASSES_FILE_PATH)
     blob = bucket.blob('models/yolov3.tf.data-00000-of-00002')
     blob.download_to_filename("/app/data/yolov3.tf.data-00000-of-00002")
     blob = bucket.blob('models/yolov3.tf.data-00001-of-00002')

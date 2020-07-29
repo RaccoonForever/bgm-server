@@ -2,4 +2,5 @@
 .gitignore
 README.md
 *.pyc
+/data/yolov3.tf*
 *.json
