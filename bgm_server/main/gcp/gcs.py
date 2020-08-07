@@ -1,6 +1,7 @@
 """
 Script that will handle all GCP actions
 """
+import os.path
 from google.cloud import storage
 from google.oauth2 import service_account
 from config import Config
@@ -39,9 +40,16 @@ def download_models():
     """
     service = init_gcs()
     bucket = service.get_bucket('server-kingdomino-bucket')
-    blob = bucket.blob('models/yolov3.tf.data-00000-of-00002')
-    blob.download_to_filename("/app/data/yolov3.tf.data-00000-of-00002")
-    blob = bucket.blob('models/yolov3.tf.data-00001-of-00002')
-    blob.download_to_filename("/app/data/yolov3.tf.data-00001-of-00002")
-    blob = bucket.blob('models/yolov3.tf.index')
-    blob.download_to_filename("/app/data/yolov3.tf.index")
+
+    # Check if models are not already DL
+    if not os.path.exists("/app/data/yolov3.tf.data-00000-of-00002"):
+        blob = bucket.blob('models/yolov3.tf.data-00000-of-00002')
+        blob.download_to_filename("/app/data/yolov3.tf.data-00000-of-00002")
+
+    if not os.path.exists("/app/data/yolov3.tf.data-00001-of-00002"):
+        blob = bucket.blob('models/yolov3.tf.data-00001-of-00002')
+        blob.download_to_filename("/app/data/yolov3.tf.data-00001-of-00002")
+
+    if not os.path.exists("/app/data/yolov3.tf.index"):
+        blob = bucket.blob('models/yolov3.tf.index')
+        blob.download_to_filename("/app/data/yolov3.tf.index")

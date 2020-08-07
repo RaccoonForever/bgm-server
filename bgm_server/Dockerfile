@@ -46,5 +46,7 @@ RUN chmod +x /app/start.sh
 # Copy project
 COPY . /app/
 
+EXPOSE 8080
+
 
 
