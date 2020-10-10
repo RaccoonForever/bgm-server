@@ -1,28 +1,28 @@
-#pylint: disable=line-too-long, too-many-locals, no-self-use
+# pylint: disable=line-too-long, too-many-locals, no-self-use
 """
 Script to test from the result of a model to the result on the gameboard
 """
+
 import unittest
 
-from ..main.yolo_transform import compute_matrix_from_predictions, assign_crowns_to_tiles, zoning, score
-from ..main.kingdominomodel.tile import Tile
-from ..main.kingdominomodel.constants import (
-    TILE_TYPE_FOREST,
-    TILE_TYPE_SWAMP,
-    TILE_TYPE_WHEAT,
-    TILE_TYPE_MINE,
-    TILE_TYPE_LAKE,
-    TILE_TYPE_CASTLE,
-    MAX_TILE_NUMBER,
-    TILE_TYPE_PASTURE,
-    TILE_TYPE_CROWN)
+from .context import Tile
+from .context import (TILE_TYPE_FOREST,
+                      TILE_TYPE_SWAMP,
+                      TILE_TYPE_WHEAT,
+                      TILE_TYPE_MINE,
+                      TILE_TYPE_LAKE,
+                      TILE_TYPE_CASTLE,
+                      MAX_TILE_NUMBER,
+                      TILE_TYPE_PASTURE,
+                      TILE_TYPE_CROWN)
+from .context import compute_matrix_from_predictions, assign_crowns_to_tiles, score, zoning
 
 
 class TransformYoloTest(unittest.TestCase):
     """ 
     Class to test all transformations to go through a gameboard prediction to a result
     """
-    
+
     def init_tiles1(self):
         """
         Tiles without crown 1
@@ -143,6 +143,16 @@ class TransformYoloTest(unittest.TestCase):
         self.assertEqual(matrix[3][1].type, TILE_TYPE_FOREST)
         self.assertEqual(matrix[3][2].type, TILE_TYPE_FOREST)
         self.assertEqual(matrix[3][3].type, TILE_TYPE_WHEAT)
+
+    def test_computematrix_no_tiles(self):
+        """
+        A test with no tiles as a param
+        """
+        tiles = []
+        matrix = compute_matrix_from_predictions(tiles)
+        self.assertTrue(len(matrix[0]) == MAX_TILE_NUMBER)
+        self.assertTrue(len(matrix) == MAX_TILE_NUMBER)
+        self.assertEqual(matrix[0][0], None)
 
     def test_assigncrowns(self):
         """
@@ -311,3 +321,15 @@ class TransformYoloTest(unittest.TestCase):
         result = score(matrix_tiles, matrix_zone)
 
         self.assertEqual(result, 31)
+
+    def test_score_empty(self):
+        """
+        Test the full transformation with no tiles recognized
+        """
+        tiles = []
+        tiles = assign_crowns_to_tiles(tiles)
+        matrix_tiles = compute_matrix_from_predictions(tiles)
+        matrix_zone, _ = zoning(matrix_tiles)
+        result = score(matrix_tiles, matrix_zone)
+
+        self.assertEqual(result, 0)

@@ -31,8 +31,9 @@ def compute_matrix_from_predictions(tiles):
     :param tiles: tiles given by a prediction
     :return:two matrixes (type tile matrix and crown matrix)
     """
-    minx_tile = min(tiles, key=attrgetter('xmin'))
-    miny_tile = min(tiles, key=attrgetter('ymin'))
+    if tiles:
+        minx_tile = min(tiles, key=attrgetter('xmin'))
+        miny_tile = min(tiles, key=attrgetter('ymin'))
 
     matrix_tiles = [[None for i in range(MAX_TILE_NUMBER)] for y in range(MAX_TILE_NUMBER)]
 
