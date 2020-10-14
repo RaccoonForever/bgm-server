@@ -14,7 +14,8 @@ from .context import (TILE_TYPE_FOREST,
                       TILE_TYPE_CASTLE,
                       MAX_TILE_NUMBER,
                       TILE_TYPE_PASTURE,
-                      TILE_TYPE_CROWN)
+                      TILE_TYPE_CROWN,
+                      TILE_TYPE_VOID)
 from .context import compute_matrix_from_predictions, assign_crowns_to_tiles, score, zoning
 
 
@@ -318,9 +319,30 @@ class TransformYoloTest(unittest.TestCase):
         tiles = assign_crowns_to_tiles(tiles)
         matrix_tiles = compute_matrix_from_predictions(tiles)
         matrix_zone, _ = zoning(matrix_tiles)
-        result = score(matrix_tiles, matrix_zone)
+        details = score(matrix_tiles, matrix_zone)
 
-        self.assertEqual(result, 31)
+        self.assertEqual(details['result'], 31)
+        self.assertEqual(details[TILE_TYPE_VOID]['result'], 0)
+        self.assertEqual(details[TILE_TYPE_VOID]['nb_tiles'], 0)
+        self.assertEqual(details[TILE_TYPE_VOID]['crowns'], 0)
+        self.assertEqual(details[TILE_TYPE_WHEAT]['result'], 3)
+        self.assertEqual(details[TILE_TYPE_WHEAT]['nb_tiles'], 5)
+        self.assertEqual(details[TILE_TYPE_WHEAT]['crowns'], 1)
+        self.assertEqual(details[TILE_TYPE_CASTLE]['result'], 0)
+        self.assertEqual(details[TILE_TYPE_CASTLE]['nb_tiles'], 1)
+        self.assertEqual(details[TILE_TYPE_CASTLE]['crowns'], 0)
+        self.assertEqual(details[TILE_TYPE_FOREST]['result'], 6)
+        self.assertEqual(details[TILE_TYPE_FOREST]['nb_tiles'], 5)
+        self.assertEqual(details[TILE_TYPE_FOREST]['crowns'], 2)
+        self.assertEqual(details[TILE_TYPE_LAKE]['result'], 1)
+        self.assertEqual(details[TILE_TYPE_LAKE]['nb_tiles'], 1)
+        self.assertEqual(details[TILE_TYPE_LAKE]['crowns'], 1)
+        self.assertEqual(details[TILE_TYPE_MINE]['result'], 21)
+        self.assertEqual(details[TILE_TYPE_MINE]['nb_tiles'], 3)
+        self.assertEqual(details[TILE_TYPE_MINE]['crowns'], 7)
+        self.assertEqual(details[TILE_TYPE_SWAMP]['result'], 0)
+        self.assertEqual(details[TILE_TYPE_SWAMP]['nb_tiles'], 1)
+        self.assertEqual(details[TILE_TYPE_SWAMP]['crowns'], 0)
 
     def test_score_empty(self):
         """
@@ -332,4 +354,4 @@ class TransformYoloTest(unittest.TestCase):
         matrix_zone, _ = zoning(matrix_tiles)
         result = score(matrix_tiles, matrix_zone)
 
-        self.assertEqual(result, 0)
+        self.assertEqual(result['result'], 0)

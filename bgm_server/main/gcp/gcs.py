@@ -43,6 +43,7 @@ def download_models():
 
     # Check if models are not already DL
     if not os.path.exists("/app/data/yolov3.tf.data-00000-of-00002"):
+        print "Getting models from GCP. Wait for downloading ..."
         blob = bucket.blob('models/yolov3.tf.data-00000-of-00002')
         blob.download_to_filename("/app/data/yolov3.tf.data-00000-of-00002")
 

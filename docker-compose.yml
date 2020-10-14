@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
     bgm_server:
-        image: raccoonforever/bgm_server:latest
+        image: raccoonforever/bgm_server:0.0.2
         container_name: bgm_server
         restart: always
         build: ./bgm_server

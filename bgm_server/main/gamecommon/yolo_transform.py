@@ -3,9 +3,10 @@
 Script that handle every transformations to compute a score from a yolo prediction
 """
 from operator import attrgetter
+from collections import defaultdict, Counter
 
 from main.gamecommon.tile import Tile
-from main.gamecommon.constants import MAX_TILE_NUMBER, MATRIX_ERROR_MARGIN, TILE_TYPE_CROWN
+from main.gamecommon.constants import MAX_TILE_NUMBER, MATRIX_ERROR_MARGIN, TILE_TYPE_CROWN, TILE_TYPE_VOID
 
 
 def convert_prediction_to_tiles(boxes, scores, classes):
@@ -123,14 +124,16 @@ def score(matrix_tiles, zone_matrix):
     Compute the score from the tiles and the zone matrix
     :param matrix_tiles: Tiles from prediction
     :param zone_matrix: zone matrix returned by the zoning function
-    :return: the score
+    :return: the score and score details as a list
     """
     result = 0
+    details = []
 
     # Tile number is the maximum zone number
     for k in range(1, len(matrix_tiles) * len(matrix_tiles[0]) + 1):
         crowns = 0
         nb_tiles = 0
+        zone_type = TILE_TYPE_VOID
         for i in range(len(zone_matrix)):
             for j in range(len(zone_matrix[0])):
 
@@ -138,10 +141,19 @@ def score(matrix_tiles, zone_matrix):
                     nb_tiles += 1
                     tile = matrix_tiles[i][j]
                     crowns += len(tile.crowns)
+                    zone_type = tile.type
 
         result += crowns * nb_tiles
+        details.append({
+            "type": zone_type,
+            "nb_tiles": nb_tiles,
+            "crowns": crowns,
+            "result": crowns * nb_tiles
+        })
 
-    return result
+    details = group_detailed_result(details, result)
+
+    return details
 
 
 def zoning(matrix_tiles):
@@ -201,3 +213,26 @@ def recursive_zoning(zone_matrix, matrix_tiles, i, j, zone):
             if matrix_tiles[i][j + 1].type == matrix_tiles[i][j].type and zone_matrix[i][j + 1] == -1:
                 zone_matrix[i][j + 1] = zone
                 recursive_zoning(zone_matrix, matrix_tiles, i, j + 1, zone)
+
+
+def group_detailed_result(details, result):
+    """
+    Function that will aggregate detailed result from a list
+    :param details: the detailed result
+    :param result: the scoring result to append to the aggregated detail
+    :return: a aggregated detailed result  by zone
+    """
+    grouped_result = group_dict_by_key(details, 'type', ['nb_tiles', 'crowns', 'result'])
+    grouped_result = {str(k): dict(v) for k, v in grouped_result.iteritems()}
+    grouped_result['result'] = result
+
+    return grouped_result
+
+
+def group_dict_by_key(dataset, group_by_key, sum_value_keys):
+    dic = defaultdict(Counter)
+    for item in dataset:
+        key = item[group_by_key]
+        vals = {k: item[k] for k in sum_value_keys}
+        dic[key].update(vals)
+    return dic

@@ -13,9 +13,9 @@ def load_models():
     """
     Main function to load all models to expose to the API
     """
-    print "-- Downloading models from GCP : Start --"
+    print "-- Loading models : Start --"
     download_models()
-    print "-- Downloading models from GCP : OK --"
+    print "-- Loading models : Done --"
 
     global MODEL_KINGDOMINO_V1
     MODEL_KINGDOMINO_V1 = yolov3(classes=Config.KINGDOMINO_V1_MODEL_CLASS_NUMBER)

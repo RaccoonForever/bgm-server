@@ -2,6 +2,8 @@ import json
 import time
 import redis
 import numpy as np
+import traceback
+
 from config import Config
 import main.yolov3.yolomodels as mdl
 from main.gamecommon.yolo_transform import convert_prediction_to_tiles, assign_crowns_to_tiles, \
@@ -52,12 +54,19 @@ def queuing_process():
                     # postprocessing
                     # transform result to remove one array layer, and keep only probabilities higher than 0
                     scores, boxes, classes = postprocessing(batch[i], boxes, scores, classes)
-                    # Compute the score
-                    result = compute_result(scores, boxes, classes)
+
+                    try:
+                        # Compute the score
+                        result = compute_result(scores, boxes, classes)
+                        result["success"] = True
+                    except Exception as exc:
+                        print "Error computing result ! Exception : "
+                        traceback.print_exc()
+                        result = {"result": 0, "success": False}
 
                     # store the output predictions in the database, using
                     # the image ID as the key so we can fetch the results
-                    redis_client.set(imageIDs[i], json.dumps(result))
+                    redis_client.set(imageIDs[i], json.dumps(result, sort_keys=True))
 
                 # remove the set of images from our queue
                 redis_client.ltrim(Config.REDIS_QUEUE_KINGDOMINO, len(imageIDs), -1)

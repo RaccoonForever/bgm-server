@@ -14,4 +14,5 @@ from main.gamecommon.constants import (
     TILE_TYPE_CASTLE,
     MAX_TILE_NUMBER,
     TILE_TYPE_PASTURE,
-    TILE_TYPE_CROWN)
+    TILE_TYPE_CROWN,
+    TILE_TYPE_VOID)

@@ -61,11 +61,14 @@ class KingDominoLatest(Resource):
 
             result = predict_kingdomino_v1(path, unique_id)
 
-            data["result"] = result
-            data["success"] = True
+            data["result"] = result['result']
+            if result['success']:
+                data["details"] = result
+            data["success"] = result['success']
 
             return flask.jsonify(data)
         return {
             "success": False,
-            "result": "File extension is not allowed. Only JPEG/JPG/PNG are allowed !"
+            "result": 0,
+            "message": "File extension is not allowed. Only JPEG/JPG/PNG are allowed !"
         }

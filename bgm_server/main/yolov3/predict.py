@@ -41,10 +41,10 @@ def predict_kingdomino_v1(filepath, uniqueid):
     while True:
         # attempt to grab the output predictions
         output = redis_client.get(uniqueid)
-        # check to see if our model has classified the input
-        # image
+        # check to see if our model has classified the input image
         if output is not None:
-            print "Score is : " + output
+            output = json.loads(output)
+            print "Score is : " + str(output['result'])
             # delete the result from the database and break
             # from the polling loop
             redis_client.delete(uniqueid)
